@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-mem
+  labels:
+    app: mem
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mem
+  template:
+    metadata:
+      labels:
+        app: mem
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: mem
+        image: index.docker.io/hainingzhen/mem-test:latest
+        imagePullPolicy: Always
+        ports:
+          - name: mem-srv
+            containerPort: 6060
+            protocol: TCP
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 50Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mem-srv
+spec:
+  type: NodePort
+  selector:
+    app: mem
+  ports:
+  - name: http
+    nodePort: 30000
+    port: 6060
+
